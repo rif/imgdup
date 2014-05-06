@@ -47,9 +47,9 @@ def hamming_distance(s1, s2):
     return sum(ch1 != ch2 for ch1, ch2 in zip(s1, s2))
 
 class ImgInfo:
-    def __init__(self, name, img, cmp_func):
+    def __init__(self, name, size, cmp_func):
         self.name = name
-        self.img = img
+        self.res = size
         self.cmp_func = cmp_func
 
     def __cmp__(self, other):
@@ -60,8 +60,7 @@ class ImgInfo:
         return 0
 
 def resolution(self):
-    s = self.img.size
-    return s[0] * s[1]
+    return self.res[0] * self.res[1]
     
 def size(self):
     statinfo = os.stat(self.name)
@@ -87,7 +86,7 @@ if __name__ == '__main__':
         sys.stdout.flush()
         i+=1
         img = Image.open(img_path)
-        ii1 = ImgInfo(img_path, img, args.cmp)
+        ii1 = ImgInfo(img_path, img.size, args.cmp)
         a = dhash(img)
         if a in img_dict:
             if not os.path.exists(dups): os.mkdir(dups)
