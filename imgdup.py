@@ -7,8 +7,8 @@ import sys, shutil, os.path
 import argparse
 
 DUP_FOLDER = 'duplicates'
-KEEP = '%_KEEP_'
-DELETE = '%d_KEEP_'
+KEEP = '%d_KEPT_'
+DELETE = '%d_GONE_'
 
 
 def dhash(image, hash_size = 8):
@@ -52,12 +52,15 @@ class ImgInfo:
         self.res = size
         self.cmp_func = cmp_func
 
-    def __cmp__(self, other):
-        self_val = self.cmp_func()
-        other_val = other.cmp_func()
-        if self_val < other.val: return -1
-        elif self_val > other.val: return 1
-        return 0
+    def __lt__(self, other):
+        self_val = self.cmp_func(self)
+        other_val = self.cmp_func(other)
+        return self_val < other_val
+    
+    def __eq__(self, other):
+        self_val = self.cmp_func(self)
+        other_val = self.cmp_func(other)
+        return self_val == other_val
 
 def resolution(self):
     return self.res[0] * self.res[1]
@@ -89,14 +92,14 @@ if __name__ == '__main__':
         ii1 = ImgInfo(img_path, img.size, args.cmp)
         a = dhash(img)
         if a in img_dict:
-            if not os.path.exists(dups): os.mkdir(dups)
+            if not os.path.exists(DUP_FOLDER): os.mkdir(DUP_FOLDER)
             ii2 = img_dict[a]
             if ii1 > ii2:
-                shutil.copy(ii1.name, os.path.join(DUP_FOLDER, KEEP%d + ii1.name))
-                shutil.move(ii2.name, os.path.join(DUP_FOLDER, DELETE%d + ii2.name))
+                shutil.copy(ii1.name, os.path.join(DUP_FOLDER, KEEP % d + ii1.name))
+                shutil.move(ii2.name, os.path.join(DUP_FOLDER, DELETE % d + ii2.name))
             else:
-                shutil.move(ii1.name, os.path.join(DUP_FOLDER, DELETE%d + ii1.name))
-                shutil.copy(ii2.name, os.path.join(DUP_FOLDER, KEEP%d + ii2.name))
+                shutil.move(ii1.name, os.path.join(DUP_FOLDER, DELETE % d + ii1.name))
+                shutil.copy(ii2.name, os.path.join(DUP_FOLDER, KEEP % d + ii2.name))
             print("\r",ii2.name, 'and', ii1.name, 'too similar!')
             d += 1
         else:
