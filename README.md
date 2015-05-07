@@ -3,6 +3,13 @@ imgdup
 
 Visual similarity image finder and cleaner
 
+Install
+-------
+
+pip install imgdup
+
+or clone the repo and run imgdup.py command directly
+
 Usage
 -----
 
