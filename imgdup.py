@@ -86,7 +86,7 @@ if __name__ == '__main__':
                         help='put the moved files back')
     args = parser.parse_args()    
     if args.undo:
-        images = glob(os.path.join(DUP_FOLDER, '*.jpg'))
+        images = glob(os.path.join(DUP_FOLDER, '*'))
         for img_path in images:            
             if KEEP_SUFIX in img_path:
                 os.remove(img_path)
@@ -98,7 +98,11 @@ if __name__ == '__main__':
         sys.exit()
     
     img_dict = {}
-    images = glob('*.jpg')
+    images = []
+    
+    types = ('*.jpg', '*.JPG', '*.png', '*.PNG')
+    for files in types: images.extend(glob(files))
+    
     i = 0
     d = 0
     for img_path in images:        
