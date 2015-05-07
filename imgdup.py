@@ -119,15 +119,16 @@ if __name__ == '__main__':
             ii1 = ImgInfo(img_path, img.size, comp)
             a = dhash(img)
             
-            if a in img_dict:                
+            if a in img_dict: # only consider exactly matching dhash (hamming_distance will be considered)
                 if not os.path.exists(DUP_FOLDER) and not args.dry_run: os.mkdir(DUP_FOLDER)
                 ii2 = img_dict[a]
                 if not args.dry_run:
+                    # prefix files with the same hash to make them a pair
                     prefix = md5((ii1.name + ii2.name).encode('utf-8')).hexdigest()[:5]
                     if compa(ii1, ii2, args.invert):
                         shutil.copy(ii1.name, os.path.join(DUP_FOLDER, KEEP % prefix + ii1.name))
                         shutil.move(ii2.name, os.path.join(DUP_FOLDER, DELETE % prefix + ii2.name))
-                        img_dict[a] = ii1
+                        img_dict[a] = ii1 # new file was kept
                     else:
                         shutil.move(ii1.name, os.path.join(DUP_FOLDER, DELETE % prefix + ii1.name))
                         shutil.copy(ii2.name, os.path.join(DUP_FOLDER, KEEP % prefix + ii2.name))
