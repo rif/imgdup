@@ -111,7 +111,7 @@ if __name__ == '__main__':
         i+=1
         img = Image.open(img_path)
         
-        comp = comp = getattr(sys.modules[__name__], args.cmp) if type(args.cmp) is str else args.cmp
+        comp = getattr(sys.modules[__name__], args.cmp) if type(args.cmp) is str else args.cmp
 
         ii1 = ImgInfo(img_path, img.size, comp)
         a = dhash(img)
