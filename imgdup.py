@@ -109,24 +109,27 @@ if __name__ == '__main__':
         sys.stdout.write("\r%d%%" % (i*100/len(images)))
         sys.stdout.flush()
         i+=1
-        img = Image.open(img_path)
-        
-        comp = getattr(sys.modules[__name__], args.cmp) if type(args.cmp) is str else args.cmp
-
-        ii1 = ImgInfo(img_path, img.size, comp)
-        a = dhash(img)
-        if a in img_dict:
-            if not os.path.exists(DUP_FOLDER) and not args.dry_run: os.mkdir(DUP_FOLDER)
-            ii2 = img_dict[a]
-            if not args.dry_run:
-                if compa(ii1, ii2, args.invert):
-                    shutil.copy(ii1.name, os.path.join(DUP_FOLDER, KEEP % d + ii1.name))
-                    shutil.move(ii2.name, os.path.join(DUP_FOLDER, DELETE % d + ii2.name))
-                else:
-                    shutil.move(ii1.name, os.path.join(DUP_FOLDER, DELETE % d + ii1.name))
-                    shutil.copy(ii2.name, os.path.join(DUP_FOLDER, KEEP % d + ii2.name))
-            print("\r",ii2.name, 'and', ii1.name, 'too similar!')
-            d += 1
-        else:
-            img_dict[a] = ii1
+        try:
+	        img = Image.open(img_path)
+	        
+	        comp = getattr(sys.modules[__name__], args.cmp) if type(args.cmp) is str else args.cmp
+	
+	        ii1 = ImgInfo(img_path, img.size, comp)
+	        a = dhash(img)
+	        if a in img_dict:
+	            if not os.path.exists(DUP_FOLDER) and not args.dry_run: os.mkdir(DUP_FOLDER)
+	            ii2 = img_dict[a]
+	            if not args.dry_run:
+	                if compa(ii1, ii2, args.invert):
+	                    shutil.copy(ii1.name, os.path.join(DUP_FOLDER, KEEP % d + ii1.name))
+	                    shutil.move(ii2.name, os.path.join(DUP_FOLDER, DELETE % d + ii2.name))
+	                else:
+	                    shutil.move(ii1.name, os.path.join(DUP_FOLDER, DELETE % d + ii1.name))
+	                    shutil.copy(ii2.name, os.path.join(DUP_FOLDER, KEEP % d + ii2.name))
+	            print("\r",ii2.name, 'and', ii1.name, 'too similar!')
+	            d += 1
+	        else:
+	            img_dict[a] = ii1
+        except:
+            print ("error processing file %s: %s"% (img_path, sys.exc_info()[0]))
 
