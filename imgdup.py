@@ -3,12 +3,14 @@
 
 from PIL import Image
 from glob import glob
-import sys, shutil, os.path
+import sys, shutil, os
 import argparse
 
 DUP_FOLDER = 'duplicates'
-KEEP = '%d_KEPT_'
-DELETE = '%d_GONE_'
+KEEP_SUFIX = '_KEPT_'
+DELETE_SUFIX = '_GONE_'
+KEEP = '%d'+KEEP_SUFIX
+DELETE = '%d'+DELETE_SUFIX
 
 
 def dhash(image, hash_size = 8):
@@ -69,19 +71,34 @@ def size(self):
     statinfo = os.stat(self.name)
     return statinfo.st_size
 
+def compa(v1, v2, invert):
+    return v1 > v2 if not invert else v2 > v1    
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Compare images base on perceptual similarity.')
     parser.add_argument('-c','--cmp', default=resolution,
-                    help='compare images by function and keep higher (default resolution)')
+                        help='compare images by function and keep higher (resolution, size [resolution])')
     parser.add_argument('-i','--invert', action='store_true',
                         help='invert the compartison function (keep lower)')
     parser.add_argument('-d','--dry_run', action='store_true',
                         help='just print the pairs')
     parser.add_argument('-u','--undo', action='store_true',
                         help='put the moved files back')
-    args = parser.parse_args()
+    args = parser.parse_args()    
+    if args.undo:
+        images = glob(os.path.join(DUP_FOLDER, '*.jpg'))
+        for img_path in images:            
+            if KEEP_SUFIX in img_path:
+                os.remove(img_path)
+            if DELETE_SUFIX in img_path:
+                file_name = img_path.split(DELETE_SUFIX)[-1]
+                shutil.move(img_path, file_name)
+                print('recovered', file_name)
+        os.rmdir(DUP_FOLDER)
+        sys.exit()
+    
     img_dict = {}
-    images = glob('*.jpg')    
+    images = glob('*.jpg')
     i = 0
     d = 0
     for img_path in images:        
@@ -89,17 +106,21 @@ if __name__ == '__main__':
         sys.stdout.flush()
         i+=1
         img = Image.open(img_path)
-        ii1 = ImgInfo(img_path, img.size, args.cmp)
+        
+        comp = comp = getattr(sys.modules[__name__], args.cmp) if type(args.cmp) is str else args.cmp
+
+        ii1 = ImgInfo(img_path, img.size, comp)
         a = dhash(img)
         if a in img_dict:
-            if not os.path.exists(DUP_FOLDER): os.mkdir(DUP_FOLDER)
+            if not os.path.exists(DUP_FOLDER) and not args.dry_run: os.mkdir(DUP_FOLDER)
             ii2 = img_dict[a]
-            if ii1 > ii2:
-                shutil.copy(ii1.name, os.path.join(DUP_FOLDER, KEEP % d + ii1.name))
-                shutil.move(ii2.name, os.path.join(DUP_FOLDER, DELETE % d + ii2.name))
-            else:
-                shutil.move(ii1.name, os.path.join(DUP_FOLDER, DELETE % d + ii1.name))
-                shutil.copy(ii2.name, os.path.join(DUP_FOLDER, KEEP % d + ii2.name))
+            if not args.dry_run:
+                if compa(ii1, ii2, args.invert):
+                    shutil.copy(ii1.name, os.path.join(DUP_FOLDER, KEEP % d + ii1.name))
+                    shutil.move(ii2.name, os.path.join(DUP_FOLDER, DELETE % d + ii2.name))
+                else:
+                    shutil.move(ii1.name, os.path.join(DUP_FOLDER, DELETE % d + ii1.name))
+                    shutil.copy(ii2.name, os.path.join(DUP_FOLDER, KEEP % d + ii2.name))
             print("\r",ii2.name, 'and', ii1.name, 'too similar!')
             d += 1
         else:
