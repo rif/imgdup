@@ -125,8 +125,8 @@ if __name__ == '__main__':
 	                    shutil.move(ii2.name, os.path.join(DUP_FOLDER, DELETE % d + ii2.name))
 	                else:
 	                    shutil.move(ii1.name, os.path.join(DUP_FOLDER, DELETE % d + ii1.name))
-	                    shutil.copy(ii2.name, os.path.join(DUP_FOLDER, KEEP % d + ii2.name))
-	            print("\r",ii2.name, 'and', ii1.name, 'too similar!')
+	                    shutil.copy(ii2.name, os.path.join(DUP_FOLDER, KEEP % d + ii2.name))	            
+                    print("\r%s and %s are too similar" % (ii2.name, ii1.name))
 	            d += 1
 	        else:
 	            img_dict[a] = ii1
