@@ -42,7 +42,7 @@ def dhash(image, hash_size = 8):
 
     return ''.join(hex_string)
 
-#not used yet, can be used to compare dict values
+#not used yet, can be used to compare dict keys
 def hamming_distance(s1, s2):
     #Return the Hamming distance between equal-length sequences
     if len(s1) != len(s2):
