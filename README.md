@@ -1,7 +1,7 @@
 imgdup
 ======
 
-Visual similarity image finder and cleaner
+Visual similarity image finder and cleaner (image deduplication tool).
 
 Install
 -------
