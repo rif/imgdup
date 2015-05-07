@@ -17,7 +17,7 @@ Usage
 
 Should be run in the images folder.
 
-It will create a duplicates folder containing fail pairs indicating which file was kept and which one is gone.
+It will create a `duplicates` folder containing similar file pairs indicating which file was kept and which one is gone. You can later review similar files in the `duplicates` folder and decide if you delete or restore each `_GONE_` marked file.
 
 ```shell
 usage: imgdup.py [-h] [-c CMP] [-i] [-d] [-u]
