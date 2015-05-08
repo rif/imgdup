@@ -34,3 +34,8 @@ optional arguments:
 ```
 
 [Watch example terminal cast here](http://asciinema.org/a/19620)
+
+WARNING
+-------
+
+Backup the image set before running this script!
