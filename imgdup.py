@@ -129,11 +129,12 @@ if __name__ == '__main__':
         images.extend(glob(files.upper()))
     print('Found %d files.'%len(images))
     
-    i = 0
+    count = 0
+    duplicates = 0
     for img_path in images:
-        sys.stdout.write("\r%d%%" % (i*100/len(images)))
+        sys.stdout.write("\r%d%%" % (count*100/len(images)))
         sys.stdout.flush()
-        i+=1
+        count += 1
         try:
             img = Image.open(img_path)
         
@@ -146,6 +147,7 @@ if __name__ == '__main__':
             except ValueError:
                 index = -1
             if index > -1: # hamming_distance comparison using specified sensitivity
+                duplicates += 1
                 if not os.path.exists(DUP_FOLDER) and not args.dry_run: os.mkdir(DUP_FOLDER)
                 ii2 = img_list[index].img_info
                 if not args.dry_run:
@@ -161,6 +163,7 @@ if __name__ == '__main__':
                     print("\r%s and %s are too similar" % (ii2.name, ii1.name))
             else:
                 img_list.append(a)
-        except:
-            print("error processing files:", sys.exc_info())
+        except IOError:
+            print("\rerror processing files:", sys.exc_info())
 
+    print("\rFound %d duplicates"%duplicates)
